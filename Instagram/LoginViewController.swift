@@ -20,16 +20,13 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func onSignIn(_ sender: AnyObject) {
-        
         let username = usernameField.text ?? ""
         let password = passwordField.text ?? ""
         
         PFUser.logInWithUsername(inBackground: username, password: password) { (user: PFUser?, error: Error?) in
-            if let error = error {
-                print("User log in failed: \(error.localizedDescription)")
-            } else {
-                print("User logged in successfully")
-                // display view controller that needs to shown after successful login
+            if user != nil {
+                print("You're logged in")
+                self.performSegue(withIdentifier: "LoginSegue", sender: nil)
             }
         }
     }
@@ -44,16 +41,15 @@ class LoginViewController: UIViewController {
             (success: Bool, error: Error?) -> Void in
             if success {
                 print("Yay, Created a User!")
+                self.performSegue(withIdentifier: "LoginSegue", sender: nil)
             } else {
-                print(error?.localizedDescription)
+                print(error?.localizedDescription as Any)
                 if error?._code == 202{
                     print("Username is taken")
                 }
             }
         }
     }
-    
-    
     /*
     // MARK: - Navigation
 
