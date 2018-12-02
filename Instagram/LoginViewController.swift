@@ -12,6 +12,8 @@ import Parse
 class LoginViewController: UIViewController {
     @IBOutlet weak var usernameField: UITextField!
     @IBOutlet weak var passwordField: UITextField!
+    @IBOutlet weak var signInButton: UIButton!
+    @IBOutlet weak var signUpButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +29,8 @@ class LoginViewController: UIViewController {
             if user != nil {
                 print("You're logged in")
                 self.performSegue(withIdentifier: "LoginSegue", sender: nil)
+            }else {
+                self.displayLoginErrorAlert()
             }
         }
     }
@@ -40,23 +44,56 @@ class LoginViewController: UIViewController {
         newUser.signUpInBackground {
             (success: Bool, error: Error?) -> Void in
             if success {
-                print("Yay, Created a User!")
-                self.performSegue(withIdentifier: "LoginSegue", sender: nil)
+                self.displaySignupSuccessAlert()
             } else {
-                print(error?.localizedDescription as Any)
-                if error?._code == 202{
-                    print("Username is taken")
-                }
+               self.displaySignupErrorAlert()
             }
         }
     }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+   
+    
+    
+    /*----------Display Alert Methods----------*/
+    
+    // This function is called whenever the sign-in credentials are incorrect. or whenever
+    // the sign-up credentials are duplicate, i.e., the user already exists
+    func displayLoginErrorAlert() {
+        // Customize the look and text of the alert controller
+        let alertController = UIAlertController(title: "Login Failed!", message: "Please enter a valid username and password combination.", preferredStyle: .alert)
+        let dismissAction = UIAlertAction(title: "Try Again", style: .default)
+        alertController.addAction(dismissAction)
+        // Present the alert and run code to clear the fields in the completing block
+        present(alertController, animated: true) {
+            self.usernameField.text = ""
+            self.passwordField.text = ""
+        }
     }
-    */
+    
+    // This function is called whenever the sign-up credentials are duplicate, i.e.,
+    // the user already exists in the database
+    func displaySignupErrorAlert() {
+        // Customize the look and text of the alert controller
+        let alertController = UIAlertController(title: "Signup Failed!", message: "That username is already taken. Please choose another one.", preferredStyle: .alert)
+        let dismissAction = UIAlertAction(title: "Try Again", style: .default)
+        alertController.addAction(dismissAction)
+        // Present the alert and run code to clear the fields in the completion block
+        present(alertController, animated: true) {
+            self.usernameField.text = ""
+            self.passwordField.text = ""
+        }
+    }
+    
+    // The function is called when the user signs-up successfully
+    func displaySignupSuccessAlert() {
+        // Customize the look and text of the alert controller
+        let alertController = UIAlertController(title: "Signup Successful!", message: "New account created.", preferredStyle: .alert)
+        // Allow the modal segue to occur when the alert is dismissed
+        let dismissAction = UIAlertAction(title: "Continue", style: .default) { (action) in
+            self.performSegue(withIdentifier: "LoginSegue", sender: nil)
+        }
+        // Present the alert to the user
+        alertController.addAction(dismissAction)
+        present(alertController, animated: true) { }
+    }
+    
 }
